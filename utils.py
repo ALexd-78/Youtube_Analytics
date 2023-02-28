@@ -36,6 +36,11 @@ class Channel:
         '''Выводим информацию о канале в JSON-формат'''
         return json.dumps(self.channel, indent=2, ensure_ascii=False)
 
+    @property
+    def channel_id(self):
+        '''Запрещает внесение изменений в id канала'''
+        return self.__channel_id
+
 
     def get_service():
         '''получает объект для работы с API вне класса'''
