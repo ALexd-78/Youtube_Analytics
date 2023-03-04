@@ -23,7 +23,7 @@ class Channel:
 
 
         #инициализация атрибутов класса при создании экземпляра класса
-        self.channel_id = self.channel['items'][0]['id']  #id канала
+        self.__channel_id = self.channel['items'][0]['id']  #id канала
         self.title = self.channel['items'][0]['snippet']['title']  #название канала
         self.description = self.channel['items'][0]['snippet']['description']  #описание канала
         self.channel_link = 'https://www.youtube.com/channel/' + self.channel['items'][0]['id'] #ссылка на канал
@@ -31,6 +31,20 @@ class Channel:
         self.video_count = self.channel['items'][0]['statistics']['videoCount']  #количество видео
         self.view_count = self.channel['items'][0]['statistics']['viewCount']  #общее количество просмотров
 
+
+    def __str__(self) -> str:
+        '''Выводит информацию для пользователья о канале'''
+        return f'Youtube-канал: {self.title}'
+
+
+    def __lt__(self, other) -> int:
+        '''Сравнивает каналы по количеству подписчиков'''
+        return self.subscriber_count > other.subscriber_count
+
+
+    def __add__(self, other) -> int:
+        '''Складывает каналы по количеству подписчиков'''
+        return int(self.subscriber_count) + int(other.subscriber_count)
 
     def print_info(self):
         '''Выводим информацию о канале в JSON-формат'''
@@ -64,7 +78,13 @@ class Channel:
         with open(filename, 'w', encoding='UTF-8') as file:
             json.dump(data, file, indent=2, ensure_ascii=False)
 
-vdud = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
+ch1 = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
+ch2 = Channel('UC1eFXmJNkjITxPFWTy6RsWg')
+# print(ch2)
+print(ch1 > ch2)
+print(ch1 < ch2)
+print(ch1 + ch2)
+
 # vdud.print_info()
 
 # print(vdud.title)
@@ -77,8 +97,6 @@ vdud = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
 # vdud.channel_id = 'Новое название'
 
 
-# как запретить менять ID
-
 # print(Channel.get_service())
 
-vdud.to_json('vdud.json')
+# vdud.to_json('vdud.json')
