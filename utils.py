@@ -37,14 +37,14 @@ class Channel:
         return f'Youtube-канал: {self.title}'
 
 
-    def __gt__(self, other) -> int:
+    def __lt__(self, other) -> int:
         '''Сравнивает каналы по количеству подписчиков'''
-        print(self.subscriber_count < other.subscriber_count)
+        return self.subscriber_count > other.subscriber_count
 
 
     def __add__(self, other) -> int:
         '''Складывает каналы по количеству подписчиков'''
-        print(int(self.subscriber_count) + int(other.subscriber_count))
+        return int(self.subscriber_count) + int(other.subscriber_count)
 
     def print_info(self):
         '''Выводим информацию о канале в JSON-формат'''
@@ -81,9 +81,9 @@ class Channel:
 ch1 = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
 ch2 = Channel('UC1eFXmJNkjITxPFWTy6RsWg')
 # print(ch2)
-ch1 > ch2
-ch1 < ch2
-ch1 + ch2
+print(ch1 > ch2)
+print(ch1 < ch2)
+print(ch1 + ch2)
 
 # vdud.print_info()
 
