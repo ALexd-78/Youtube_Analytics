@@ -55,8 +55,8 @@ class Channel:
         '''Запрещает внесение изменений в id канала'''
         return self.__channel_id
 
-
-    def get_service():
+    @classmethod
+    def get_service(cls):
         '''получает объект для работы с API вне класса'''
 
         api_key: str = os.getenv('API_KEY')
