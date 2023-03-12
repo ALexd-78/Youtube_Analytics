@@ -29,7 +29,7 @@ class Channel:
         self.view_count = self.channel['items'][0]['statistics']['viewCount']  # общее количество просмотров
 
     def __str__(self) -> str:
-        '''Выводит информацию для пользователья о канале'''
+        '''Выводит информацию для пользователя о канале'''
         return f'Youtube-канал: {self.title}'
 
     def __lt__(self, other) -> int:
@@ -76,7 +76,7 @@ class Video:
         self.video_id = video_id
         youtube = Channel.get_service()
         video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
-        # printj(video_response)
+
         self.video_title: str = video_response['items'][0]['snippet']['title']
         self.view_count: int = video_response['items'][0]['statistics']['viewCount']
         self.like_count: int = video_response['items'][0]['statistics']['likeCount']
@@ -84,17 +84,29 @@ class Video:
 
 
     def __str__(self) -> str:
-        '''Выводит информацию для пользователья о видео'''
+        '''Выводит информацию для пользователя о видео'''
         return self.video_title
 
+class PLVideo(Video):
+    def __init__(self, video_id: str, playlist_id: str):
+        super().__init__(video_id)
+        # self.video_id = video_id
+        self.playlist_id = playlist_id
+        youtube = Channel.get_service()
+        playlist_info = youtube.playlists().list(id=playlist_id, part='snippet, contentDetails, status').execute()
+        self.playlist_title = playlist_info['items'][0]['snippet']['title']
+
+
+    def __str__(self) -> str:
+        '''Выводит информацию для пользователя о плейлисте'''
+        return f'{self.video_title} ({self.playlist_title})'
 
 
 video1 = Video('9lO06Zxhu88')
-
-# video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
+video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
 print(video1)
-print(video1.view_count)
-print(video1.like_count)
+print(video2)
+
 # ch1 = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
 # ch2 = Channel('UC1eFXmJNkjITxPFWTy6RsWg')
 # print(ch2)
