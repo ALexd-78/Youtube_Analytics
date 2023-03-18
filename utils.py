@@ -1,9 +1,12 @@
 import os
 import json
+import pprint
+import isodate
+import datetime
 
 from googleapiclient.discovery import build
 
-import isodate
+
 
 class Channel:
 
@@ -102,27 +105,58 @@ class PLVideo(Video):
         return f'{self.video_title} ({self.playlist_title})'
 
 
-video1 = Video('9lO06Zxhu88')
-video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
-print(video1)
-print(video2)
+class PlayList():
+    '''Обработка данных плейлиста'''
+    def __init__(self, playlist_id: str):
+        self.playlist_id = playlist_id
+        youtube = Channel.get_service()
+        self.playlist = youtube.playlists().list(id=self.playlist_id, part='snippet',).execute()
+        self.title = self.playlist['items'][0]['snippet']['title']
+        self.url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
+        self.playlist_video = youtube.playlistItems().list(playlistId=self.playlist_id, part='contentDetails').execute()
+        # получает все id видеороликов из плейлиста
+        self.video_ids: list[str] = [video['contentDetails']['videoId'] for video in self.playlist_video['items']]
+        # выводит длительность видеороликов из плейлиста
+        self.video_response = youtube.videos().list(part='contentDetails,statistics', id=','.join(self.video_ids)).execute()
+
+
+    @property
+    def total_duration(self):
+        total_duration = datetime.timedelta()
+
+        for video in self.video_response['items']:
+            iso_8601_duration = video['contentDetails']['duration']
+            duration = isodate.parse_duration(iso_8601_duration)
+            total_duration += duration
+        return total_duration
+
+
+    def show_best_video(self):
+
+        videos = {}
+        for i in range(len(self.video_ids)):
+            videos[int(self.video_response['items'][i]['statistics']['likeCount'])] = self.video_ids[i]
+
+        return f"https://www.youtube.com/watch?v={videos[max(videos)]}"
+
+
+pl = PlayList('PLguYHBi01DWr4bRWc4uaguASmo7lW4GCb')
+# print(pl.title)
+# print(pl.url)
+# pprint.pprint(pl.playlist)
+
+duration = pl.total_duration
+print(duration)
+print(type(duration))
+print(duration.total_seconds())
+print(pl.show_best_video())
+
+
+# print(pl.playlist_title)
+# video1 = Video('9lO06Zxhu88')
+# video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
+# print(video1)
+# print(video2)
 
 # ch1 = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
 # ch2 = Channel('UC1eFXmJNkjITxPFWTy6RsWg')
-# print(ch2)
-# print(ch1 > ch2)
-# print(ch1 < ch2)
-# print(ch1 + ch2)
-
-# vdud.print_info()
-
-# print(vdud.title)
-# print(vdud.description)
-# print(vdud.channel_link)
-# print(vdud.subscriber_count)
-# print(vdud.video_count)
-# print(vdud.view_count)
-
-# vdud.channel_id = 'Новое название'
-# print(Channel.get_service())
-# vdud.to_json('vdud.json')
