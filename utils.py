@@ -74,17 +74,22 @@ class Channel:
             json.dump(data, file, indent=2, ensure_ascii=False)
 
 
+class VIDError(Exception):
+    pass
+
 class Video:
     def __init__(self, video_id: str):
         self.video_id = video_id
-        youtube = Channel.get_service()
-        video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
-
-        self.video_title: str = video_response['items'][0]['snippet']['title']
-        self.view_count: int = video_response['items'][0]['statistics']['viewCount']
-        self.like_count: int = video_response['items'][0]['statistics']['likeCount']
-
-
+        try:
+            youtube = Channel.get_service()
+            self.video_response = youtube.videos().list(id=self.video_id, part='snippet,statistics',).execute()
+            self.video_title: str = self.video_response['items'][0]['snippet']['title']
+            self.view_count: int = self.video_response['items'][0]['statistics']['viewCount']
+            self.like_count: int = self.video_response['items'][0]['statistics']['likeCount']
+        except:
+            self.video_title = None
+            self.view_count = None
+            self.like_count = None
 
     def __str__(self) -> str:
         '''Выводит информацию для пользователя о видео'''
@@ -93,7 +98,6 @@ class Video:
 class PLVideo(Video):
     def __init__(self, video_id: str, playlist_id: str):
         super().__init__(video_id)
-        # self.video_id = video_id
         self.playlist_id = playlist_id
         youtube = Channel.get_service()
         playlist_info = youtube.playlists().list(id=playlist_id, part='snippet, contentDetails, status').execute()
@@ -140,23 +144,10 @@ class PlayList():
         return f"https://www.youtube.com/watch?v={videos[max(videos)]}"
 
 
-pl = PlayList('PLguYHBi01DWr4bRWc4uaguASmo7lW4GCb')
-# print(pl.title)
-# print(pl.url)
-# pprint.pprint(pl.playlist)
-
-duration = pl.total_duration
-print(duration)
-print(type(duration))
-print(duration.total_seconds())
-print(pl.show_best_video())
+broken_video = Video('broken_video_id')
+print(broken_video.video_title)
+print((broken_video.like_count))
 
 
-# print(pl.playlist_title)
 # video1 = Video('9lO06Zxhu88')
-# video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
 # print(video1)
-# print(video2)
-
-# ch1 = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
-# ch2 = Channel('UC1eFXmJNkjITxPFWTy6RsWg')
