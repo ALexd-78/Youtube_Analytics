@@ -86,7 +86,8 @@ class Video:
             self.video_title: str = self.video_response['items'][0]['snippet']['title']
             self.view_count: int = self.video_response['items'][0]['statistics']['viewCount']
             self.like_count: int = self.video_response['items'][0]['statistics']['likeCount']
-        except:
+        except IndexError:
+            print('Некорректный id')
             self.video_title = None
             self.view_count = None
             self.like_count = None
